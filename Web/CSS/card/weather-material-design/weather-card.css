@@ -1,0 +1,343 @@
+body {
+    font-family: Roboto, serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.nav {
+    height: 56px;
+    box-shadow: 0px 3px 3px #ccc;
+}
+
+.grid {
+    border: solid 1px #ccc;
+    height: 88vh;
+}
+
+.first_row {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    /*height: 33%;*/
+    height: 100%;
+}
+
+.second_row {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    /*height: 33%;*/
+    height: 50%;
+}
+
+.third_row {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 33%;
+}
+
+.card-1 {
+    /*flex : 1;*/
+    border-radius: 10%;
+    width: 250px;
+    height: 300px;
+    border: solid 1px #ccc;
+}
+
+.card-2 {
+    /*flex: 2;*/
+    width: 350px;
+    height: 350px;
+    border: solid 1px #ccc;
+    border-radius: 1%;
+    box-shadow:3px 3px 3px #ccc;
+    transition: height .4s;
+    position: relative;
+}
+
+.card-3 {
+    /*flex: 3;*/
+    width: 200px;
+    height: 250px;
+    border: solid 1px #ccc;
+}
+
+.card-4 {
+    /*flex:4;*/
+    width: 250px;
+    height: 250px;
+    border: solid 1px #ccc;
+}
+
+.image {
+    border: solid 1px #ccc;
+    height: 49%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.image > .image-content {
+    height: 100%;
+    overflow: hidden;
+    transition: transform .3s;
+}
+
+.image > .image-content:hover {
+    transform: scale(1.1);
+}
+
+.description {
+    border: solid 1px #ccc;
+    height: 50%;
+    width: 100%;
+    position: relative;
+}
+
+.title {
+    padding: 10px 10px 10px;
+}
+
+.content {
+    padding: 10px 10px 10px;
+}
+
+.date {
+    padding: 10px 10px 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.card-2 > .simple-view {
+    box-sizing: border-box;
+    padding: 20px 15px 5px;
+    width: 100%;
+    height: 300px;
+}
+
+.card-2 > .simple-view > .city {
+    font-size: 20px;
+}
+
+.card-2 > .simple-view > .simple-info {
+    width: 100%;
+    color: #888;
+
+}
+
+.card-2 > .simple-view > .forecast-1 {
+    width: 100%;
+    height: 45%;
+    padding: 20px 0px 5px;
+    display: flex;
+}
+
+.card-2 > .simple-view > .forecast-1 > .temperature {
+    width: 40%;
+    height: 100%;
+    flex: 1;
+    font-size: 120px;
+}
+
+.card-2 > .simple-view > .forecast-1 > .celsius {
+    flex: 1;
+    font-size: 50px;
+    padding-top: 15px;
+}
+
+.card-2 > .simple-view > .forecast-1 > .weather-img {
+    flex: 1;
+    width: 30%;
+    height: 100%;
+    font-size: 40px;
+}
+
+.card-2 > .simple-view > .forecast-2 {
+    padding-top: 5px;
+    height: 30px;
+    display: flex;
+    color: #888;
+}
+
+.card-2 > .simple-view > .forecast-2 > .precipitation {
+    flex: 1;
+    display: flex;
+}
+
+.card-2 > .simple-view > .forecast-2 > .precipitation > .rain-icon {
+    height: 30px;
+    width: 30px;
+}
+
+.card-2 > .simple-view > .forecast-2 > .precipitation > .percentage {
+    padding-left: 10px;
+    line-height: 30px;
+}
+
+.card-2 > .simple-view > .forecast-2 > .wind {
+    display: flex;
+
+}
+
+.card-2 > .simple-view > .forecast-2 > .wind > .wind-icon {
+    height: 30px;
+    width: 30px;
+}
+
+.card-2 > .simple-view > .forecast-2 > .wind > .wind-speed {
+    padding-left: 10px;
+    line-height: 30px;
+}
+
+.card-2 > .simple-view > .time-meter {
+    position: relative;
+    margin-top: 10px;
+}
+
+.card-2 > .simple-view > .time-meter > .meter {
+    height: 2px;
+    width: 100%;
+    margin-top: 4px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(200,200,200,0.7);
+}
+
+.card-2 > .simple-view > .time-meter > .bar {
+    height: 2px;
+    width: 40%;
+    margin-top: 4px;
+    left: 0;
+    top: 0;
+    position: absolute;
+    background: rgba(0,0,0,1);
+}
+
+.card-2 > .simple-view > .time-meter > .cursor {
+    position: absolute;
+    left: 40%;
+    height: 10px;
+    width: 10px;
+    background: #000;
+    border-radius: 50%;
+}
+
+.card-2 > .simple-view > .time {
+    display: flex;
+    margin-top: 25px;
+    font-size: 15px;
+    text-align: center;
+}
+
+.card-2 > .simple-view > .time > .eight-am {
+    flex: 1;
+}
+
+.card-2 > .simple-view > .time > .eleven-am {
+    flex: 1;
+}
+
+.card-2 > .simple-view > .time > .two-pm {
+    flex: 1;
+}
+
+.card-2 > .simple-view > .time > .five-pm {
+    flex: 1;
+}
+
+.card-2 > .simple-view > .time > .eight-pm {
+    flex: 1;
+}
+
+.card-2 > .card-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    border-top: solid 1px #ccc;
+    box-sizing: border-box;
+}
+
+.card-2 > .card-bottom > .expand-button {
+    padding-left: 15px;
+    width: 60px;
+    height: 30px;
+    color: #4411ff;
+    line-height: 50px;
+}
+
+#button {
+    opacity: 0;
+    z-index: 1;
+    transform: scale(6);
+    transition: top .4s;
+    position: absolute;
+    left: 700px;
+    top: 626px;
+}
+
+#button:checked {
+    top: 780px;
+}
+
+#button:checked ~ .card-2 {
+    height: 650px;
+}
+
+
+.button {
+    position: absolute;
+    left: 680px;
+    top: 626px;
+    width: 60px;
+    height: 30px;
+    color: #4411ff;
+    transition: top .4s;
+}
+
+#button:checked + #expand-button {
+    top: 776px;
+}
+
+#button:checked ~ .card-2 > .week-forecast {
+    opacity: 1;
+    height: 300px;
+}
+
+.card-2 > .week-forecast {
+    height: 0;
+    padding: 0px 15px 10px;
+    opacity: 0;
+}
+
+.card-2 > .week-forecast > .day {
+    transition: height .4s;
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.card-2 > .week-forecast > .day > .day-text {
+    flex: 4;
+    color: #888;
+}
+
+.card-2  > .week-forecast > .day > .day-weather-img {
+    flex: 1;
+}
+
+.card-2  > .week-forecast > .day > .day-temperature {
+    flex: 2;
+    color: #888;
+    text-align: end;
+}
+
+.footer {
+    height: 56px;
+    border: solid 1px #ccc;
+}
+
+
