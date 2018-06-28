@@ -169,8 +169,9 @@ annotation class CustomSerializer(
 
 ### 10.2.1 코틀린 리플렉션 API : KClass, KCallable, KFuntion, KProperty
 **KClass**
-java.lang.Class에 해당
-클래스 안에 있는 모든 선언을 열거하고 각 선언에 접근하거나 클래스의 상위 클래스를 얻을 수 있다.
+- java.lang.Class에 해당
+- 클래스 안에 있는 모든 선언을 열거하고 각 선언에 접근하거나 클래스의 상위 클래스를 얻을 수 있다.
+- 사용할 수 있는 다양한 기능은 실제로는 kotlin-reflect 라이브러리를 통해 제공하는 확장 함수이다. 사용하기 위해선 import kotlin.reflet.full.*로 확장 함수 선언을 임포트해야 한다.
 
 ```java
 // 코틀린
@@ -178,6 +179,107 @@ MyClass::class
 // 자바
 java.lang.Object.getClass()
 ```
+
+**KCallable**
+- 함수와 프로퍼티를 아우르는 공통 상위 인터페이스
+- 함수 참조를 하면 KCallable 인스턴스가 생성된다.
+- 함수 참조가 가리키는 함수를 호출하려면 KCallable.call 메소드가 호출된다.
+
+**KFunctionN**
+- N은 파리미터의 갯수를 나타낸다
+- KFunction 인터페이스를 통해 함수를 호출하려면 invoke 메소드를 사용해야 한다.  
+- invoke는 정해진 개수의 인자만 받아들인다
+- 인자 타입은 KFunction1 제네릭 인터페이스의 첫 번째 타입 파라미터와 같다. 
+- KFunction 은 직접 호출 가능하다
+
+```java
+import kotlin.reflect.KFunction2
+
+fun sum(X: Int, y: Int) = x + y
+>>> val kFunction: KFunction2<Int, Int, Int> = ::sum
+>>> println(kFunction.invoke(1, 2) + kFunction(3, 4))
+10
+>>> kFunction(1)
+ERROR: No value passed for parameter p2 // 인자의 갯수 맞춰야함
+```
+
+
+call 은 타입 안전성을 보장해주지 않는다. -> call 은 Any? 타입의 다변 인자(vararg)를 받기 때문
+KFunction의 인자 타입과 반환 타입을 모두 알면 invoke() 호출이 낫다.
+
+**KPropertyN**
+- KProperty의 call은 프로퍼티의 게터를 호출한다
+- 제네릭 클래스이다 -> 타입파라미터와 일치하는 수신 객체만 넘길 수 있다.
+
+
+### 10.2.2 리플렉션을 사용한 객체 직렬화 구현
+```java
+private fun Stringbuilder.serializeObject(obj:Any) {
+	val kClass = obj.javaClass.kotlin // 객체의 KClass를 얻음
+	val properties - kClass.memeberProperties // 클래스의 모든 프로퍼티를 얻는다
+	properties.joinToStringBuilder(
+			this, prefix = "{", postfix = "}") { prop ->
+		serializeString(prop.name) // 프로퍼티 이름을 얻는다
+		append(":")
+		serializePropertyValue(prop.get(obj)) // 프로퍼티 값을 얻음
+	}
+}
+```
+
+### 10.2.3 애노테이션을 활용한 직렬화 제어
+**findAnnotation()**
+KAnnotatedElement 인터페이스에 존재하는 함수 
+인자로 전달받은 타입에 해당하는 애노테이션이 있으면 그 애노테이션을 반환함
+
+```java
+ val properties = kClass.memberProperties
+	.filter { it.findAnnotation<JSonExclude>() == null }
+```
+
+
+**프로퍼티 직렬화**
+@JsonName에 따라 프로퍼티 이름을 처리함
+```java
+private fun StringBuilder.serializeProperty(
+	prop: KProperty1<Any, *>, obj: Any
+) {
+	val jsonNameAnn = prop.findAnnotation<JsonName>()
+	val propName = jsonNameAnn?.name ?: prop.name
+	serializeString(propName)
+	append(": ")
+	serializePropertyValue(prop.get(obj))
+}
+```
+
+### 10.2.4 JSON 파싱과 객체 역직렬화
+역직렬화는 JSON 문자열 입력을 파싱하고, 리플렉션을 사용해 객체의 내부에 접근해서 새로운 객체와 프로퍼티를 생성하기 때문에 직렬화보다 어렵다.
+
+**제이키드의 JSON 역직렬화**
+1. 어휘 분석기 (lexical analyzer, lexer) - 문자열을 토큰의 리스트로 변환
+2. 문법 분석기 (syntax analyzer) , parser  - 토큰의 리스트를 구조화된 표현으로 변환
+
+
+### 10.2.5 최종 역직렬화 단계: callBy(), 리플렉션을 사용해 객체 만들기
+**ClassInfo 클래스**
+최종 결과인 객체 인스턴스를 생성하고 생성자 파라미터 정보를 캐시함
+
+
+## 10.3 요약
+- 코틀린에서 애노테이션을 적용할 때 사용하는 문법은 자바와 거의 같다
+- 코틀린에서는 자바보다 더 넓은 대상에 애노테이션을 적용할 수 있다. 그랜 대상으로는 파일과 식을 들 수 있다.
+- 애노테이션 인자로 원시 타입 값, 문자열 ,이넘, 클래스 참조, 다른 애노테이션 클래스의 인스턴스, 그리고 지금까지 말한 여러 유형의 값으로 이뤄진 배열을 사용할 수 있다
+- @get:Ruled을 사용해 애노테이션의 사용 대상을 명시하면 한 코틀린 선언이 여러 가지 바이트코드 요소를 만들어내는 경우 정확히 어떤 부분에 애노테이션을 적용할지 지정할 수 있다.
+- 애노테이션 클래스를 정의할 때는 본문이 없고 주 생성자의 모든 파라미터를 val 프로퍼티로 표시한 코틀린 클래스를 사용한다.
+- 메타애노테이션을 사용해 대상, 애노테이션 유지 방식 등 여러 애노테이션 특성을 지정할 수 있다.
+- 리플렉션 API를 통해 실행 시점에 객체의 메소드와 프로퍼티를 열거하고 접근할 수 있다. 리플렉션 API에는 클래스(KClass), 함수(KFucntion) 등 여러 종류의 선언을 표현하는 인터페이스가 들어있다.
+- 클래스를 컴파일 시점에 알고 있다면 KClass 인스턴스를 얻기 위해 ClassName::class를 사용한다. 하지만 실행 시점에 obj 변수에 담긴 객체로부터 KClass 인스턴스를 얻기 위해서는 obj.javaClass.kotlin을 사용한다.
+- KFunction과 KProperty 인터페이스는 모두 KCallable 을 확장한다. KCallable은 제네릭 call 메소드를 제공한다.
+- KCallable.callBy 메소드를 사용하면 메소드를 호출하면서 디폴트 파라미터 값을 사용할 수 있다.
+- KFunction0, KFunction1 등의 인터페이스는 모두 파라미터 수가 다른 함수를 표현하며, invoke 메소드를 사용해 함수를 호출할 수 있다.
+- KProperty0는 최상위 프로퍼티나 변수, KProperty1은 수신 객체가 있는 프로퍼티에 접근할 때 쓰는 인터페이스다. 두 인터페이스 모두 get 메소드를 사용해 프로퍼티 값을 가져올 수 있다. KMutableProperty0과 KMutableProperty1은 각각 KProperty0과 KProperty1을 확장하며, set 메소드를 통해 프로퍼티 값을 변경할 수 있게 해준다.
+
+
+
 
 
 
