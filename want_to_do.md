@@ -5,4 +5,5 @@
 - make real-time updated alarm app
 - ASMR social app
 - weather based daily outfit recommendation app
+- make a github app that can commit and push
 #wtd
