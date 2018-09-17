@@ -78,7 +78,7 @@ public class QuizActivity extends AppCompatActivity {
 
 ## 안드로이드 빌드
 ![](Ch1_%E1%84%8E%E1%85%A5%E1%86%BA_%E1%84%8B%E1%85%A2%E1%84%91%E1%85%B3%E1%86%AF%E1%84%85%E1%85%B5%E1%84%8F%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB/470A0D49-90AF-4655-8C3B-B7DB1B96BBB4.png)
-[Android Build Process](https://t1.daumcdn.net/cfile/tistory/2445333552801EA131)
+![Android Build Process](https://t1.daumcdn.net/cfile/tistory/2445333552801EA131)
 
 
 
