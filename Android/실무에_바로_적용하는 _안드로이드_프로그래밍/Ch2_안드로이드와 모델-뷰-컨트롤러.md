@@ -1,7 +1,7 @@
 # Ch2_안드로이드와 모델-뷰-컨트롤러
 ## 모델-뷰-컨트롤러
 ![](Ch2_%E1%84%8B%E1%85%A1%E1%86%AB%E1%84%83%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8B%E1%85%B5%E1%84%83%E1%85%B3%E1%84%8B%E1%85%AA%20%E1%84%86%E1%85%A9%E1%84%83%E1%85%A6%E1%86%AF-%E1%84%87%E1%85%B2-%E1%84%8F%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3%E1%84%85%E1%85%A9%E1%86%AF%E1%84%85%E1%85%A5/6432770B-7CA9-4A76-96CF-481CD9217F92.png)
-[mvc](https://image.slidesharecdn.com/05-activitiesviews-150604081932-lva1-app6891/95/android-activities-views-50-638.jpg?cb=1433406535)
+![mvc](https://image.slidesharecdn.com/05-activitiesviews-150604081932-lva1-app6891/95/android-activities-views-50-638.jpg?cb=1433406535)
 
 - **Model**- 애플리케이션의 데이터와 ‘비즈니스 로직’을 갖음. 모델 클래스는 우리 앱과 관계가 있는 것들을 모델링하기 위해 설계된다. 애플리케이션의 모든 모델 객체들은 모델 계층을 구성한다.
 
