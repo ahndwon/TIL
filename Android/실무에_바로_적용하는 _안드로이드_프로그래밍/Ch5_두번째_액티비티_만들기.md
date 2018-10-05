@@ -1,5 +1,5 @@
 # Ch5_두번째_액티비티_만들기
-**액티비티를 실행** - 액티비티의 인스턴스를 생성하고 onCreate(Bundle)메서드를 호출하도록 운영체제에 요청한다는 것을 의미한다
+액티비티를 실행 - 액티비티의 인스턴스를 생성하고 onCreate(Bundle)메서드를 호출하도록 운영체제에 요청한다는 것을 의미한다
 
 
 `tools:text` - 디자인 Preview에선 텍스트가 나타나지만 앱을 실행하면 나타나지 않는다.
@@ -12,9 +12,9 @@
 .은 액티비티 클래스가 앞의 package 속성에 지정된 패키지에 위치한다는 것을 안드로이드 운영체제에 알려준다.
 
 ### 액티비티 추가시 필수 요소
-	- 액티비티 클래스 생성
-	- 액티비티 레이아웃 xml 생성
-	- Android Manifest에 액티비티 추가
+	- [ ] 액티비티 클래스 생성
+	- [ ] 액티비티 레이아웃 xml 생성
+	- [ ] Android Manifest에 액티비티 추가
 
 ### 액티비티 시작시키기
 `public void startActivity(Intent intent)`
@@ -23,11 +23,11 @@
 ![Intent](https://t1.daumcdn.net/cfile/tistory/272FC83A53EA47590D)
 
 ## 인텐트로 통신하기
-**인텐트**는 컴포넌트가 운영체제와 통신하기 위해 사용할 수 있는ㄱ ㅐㄱ체다. 지금까지 우리가 보았던 컴포넌트는 액티비티뿐이다. 그러나 컴포넌트에는 서비스, 브로드캐스트 수신자, 콘텐트 제공자 등 여러 가지가 있다.
+인텐트는 컴포넌트가 운영체제와 통신하기 위해 사용할 수 있는 객체다. 지금까지 우리가 보았던 컴포넌트는 액티비티뿐이다. 그러나 컴포넌트에는 서비스, 브로드캐스트 수신자, 콘텐트 제공자 등 여러 가지가 있다.
 
 `public Intent(Context packageContext, Class<?> cls)`
 
-**인텐트로 액티비티 시작**
+인텐트로 액티비티 시작
 ```java
 Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
 startActivity(intent);
@@ -37,16 +37,16 @@ startActivity(intent);
 
 ## 명시적 인텐트와 암시적 인텐트
 
-- 명시적 인텐트 - Context와 Class 객체를 갖는 Intent 객체를 생성하는 것은 명시적(explicit) 인텐트를 생성하는 것이다.  애플리케이션 내부에 있는 액티비티를 시작시키기 위해 사용됨
-- 암시적 인텐트 - 한 애플리케이션의 액티비티에서 다른 애플리케이션의 액티비티를 시작시키고자 할 때는 암시적(implicit) 인텐트를 생성한다.
+- [ ] 명시적 인텐트 - Context와 Class 객체를 갖는 Intent 객체를 생성하는 것은 명시적(explicit) 인텐트를 생성하는 것이다.  애플리케이션 내부에 있는 액티비티를 시작시키기 위해 사용됨
+- [ ] 암시적 인텐트 - 한 애플리케이션의 액티비티에서 다른 애플리케이션의 액티비티를 시작시키고자 할 때는 암시적(implicit) 인텐트를 생성한다.
 
 
 ## 인텐트 엑스트라 사용하기
-**엑스트라**
-- 호출하는 액티비티가 인텐트에 포함시킬 수 있는 임의의 데이터. 요청된 인텐트는 안드로이드 운영체제가 받아서 수신 액티비티에 전달한다. 그 수신 액티비티는 인텐트의 엑스트라에 액세스하여 그것의 데이터를 사용할 수 있다.
-- 키와 값이 한 쌍으로 된 구조
+엑스트라
+- [ ] 호출하는 액티비티가 인텐트에 포함시킬 수 있는 임의의 데이터. 요청된 인텐트는 안드로이드 운영체제가 받아서 수신 액티비티에 전달한다. 그 수신 액티비티는 인텐트의 엑스트라에 액세스하여 그것의 데이터를 사용할 수 있다.
+- [ ] 키와 값이 한 쌍으로 된 구조
 
-**사용법**
+사용법
 ```java
 
 // 발송 액티비티
@@ -62,10 +62,29 @@ protected void onCreate(Bundle savedInstanceState) {
 	answerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 ```
 
+
 ## 자식 액티비티로부터 결과 돌려받기
 `public void startActivityForResult(Intent intent, int requestCode)`
 
-요청코드 - 사용자가 정의한 정수, 자식 액티비티에 전달되었다가 부모 액티비티가 다시 돌려받는다. 그리고 부모 액티비티가 여러 타입의 자식 액티비티들을 시작시킬 경우에 어떤 자식 액티비티가 겨로가를 돌려주는 알고자 할 때 사용됨.
+요청코드 - 사용자가 정의한 정수, 자식 액티비티에 전달되었다가 부모 액티비티가 다시 돌려받는다. 그리고 부모 액티비티가 여러 타입의 자식 액티비티들을 시작시킬 경우에 어떤 자식 액티비티가 결과를 돌려주는 알고자 할 때 사용됨.
+
+**주의**
+자식 액티비티에서 `setResult(...)` 를 호출하지 않고 Back 버튼을 누를 경우 ,부모 액티비티는 **Activity.RESULT_CANCELED**를 result code로 반환한다.
+
+
+## 안드로이드가 액티비티를 아는 방법
+앱을 실행하면 안드로이드 운영체제는 애플리케이션을 시작시키는 것이 아니라 애플리케이션의 액티비티를 시작시킨다. 구체적으론 애플리케이션의 **Launcher** 액티비티를 실행한다.
+
+LauncerActivity 정의 방법
+```xml
+<activity android:name".MainActivity">
+	<intent-filter>
+    <action android:name="android.intent.action.MAIN" />
+    <category android:name="android.intent.category.LAUNCHER" />
+</intent-filter>
+</activity>
+
+```
 
 
 
