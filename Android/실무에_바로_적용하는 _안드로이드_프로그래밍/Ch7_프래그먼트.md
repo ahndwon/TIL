@@ -24,4 +24,48 @@ UI의 유연성을 성취하려면 비용이 든다. -> 코드가 더 복잡해�
 의존성 문자열은  groupId:artifactId:version 으로 구성된 메이븐 형식을 사용한다.
 메이븐은 의존성 관리 도구이다.
 
+
+## UI 프래그먼트의 호스팅
+* 액티비티 자신의 레이아웃에 프래그먼트의 뷰를 넣을 위치를 정의해야 한다.
+* 프래그먼트 인스턴스의 생명주기를 관리해야 한다.
+
+### 프래그먼트 생명주기
+액티비티의 생명주기와 유사하다.
+중단, 일시 중지, 실행 상태를 갖는다.
+![](Ch7_%E1%84%91%E1%85%B3%E1%84%85%E1%85%A2%E1%84%80%E1%85%B3%E1%84%86%E1%85%A5%E1%86%AB%E1%84%90%E1%85%B3/B87D995B-EB5E-4277-94AD-5CA6E41ED4DE.png)
+![fragment lifecycle](https://i.stack.imgur.com/fRxIQ.png)
+
+### 호스팅의 두 가지 방법
+* 프래그먼트를 액티비티의 레이아웃에 정적으로 추가한다.
+* 프래그먼트를 액티비티의 코드에 동적으로 추가한다.
+
+첫번째 방법은 프래그먼트의 뷰가 액티빝의 뷰에 고정되어서 교체가 불가능하다.
+동적으로 프래그먼트를 추가해야 런타임에 프래그먼트를 제어할 수 있다.
+
+
+## 프래그먼트 생명주기 메서드 구현
+### onCreateView(…)
+```java
+@Override
+public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	View v = inflater.inflate(R.layout.fragment_crime, container, false);
+	return v;
+}
+```
+내부에서 레이아웃 리소스 ID를 인자로 전달하여 LayoutInflater.inflate(...)를 호출함으로써 프래그먼트의 뷰를 명시적으로 인플레이트 해줘야한다. 두 번째 인자는 위젯들을 올바르게 구성하기 위해 필요한 뷰의 부모다. 세 번째 인자는 인플레이트된 뷰를 뷰의 부모에게 추가할 것인지를 LayoutInflater에 알려준다.
+
+프래그먼트에서 뷰의 객체 참조를 얻기 위해선 액티비티와 달리 View.findViewById(int)를 호출해야 한다. Activity.findViewById(int) 메서드는 내부적으로 View.findViewById(int)를 호출하는 Convenience 메서드이다.
+`mTitleField = (EditText) v.findViewById(R.id.crime_title);`
+
+
+## UI Fragment를 FragmentManager에 추가하기
+**FragmentManager** - 프래그먼트를 관리하고 그것의 뷰를 액티비티의 뷰 계층에 추가하는 책임을 갖는다.
+
+
+
+
+
+
+
+
 #android/실무에바로적용하는안드로이드
