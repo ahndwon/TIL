@@ -59,7 +59,31 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 
 
 ## UI Fragment를 FragmentManager에 추가하기
-**FragmentManager** - 프래그먼트를 관리하고 그것의 뷰를 액티비티의 뷰 계층에 추가하는 책임을 갖는다.
+**FragmentManager** - 프래그먼트를 관리하고 그것의 뷰를 액티비티의 뷰 계층에 추가하는 책임을 갖는다. 프래그먼트를 액티비티에 추가하려면 액티비티의 FragmentManager를 명시적으로 호출해야 한다.
+`getFragmentManager()` 를 통해 호출 가능
+
+### 프래그먼트 트랜잭션
+* **FragmentTransaction** - 프래그먼트를 추가, 삭제, 첨부, 분리, 변경 하는데 사용된다. 프래그먼트를 사용해서 런타임 시에 화면을 구성 또는 재구성하는 방법이 프래그먼트 트랜잭션이다. FragmentManager는 프래그먼트 트랜잭션의 back 스택을 유지 관리한다.
+`FragmentManager.beginTransaction()` 메서드는 FragmentTransaction의 인스턴스를 생성하여 반환한다.  FragmentTransaction 클래스는 Fluent interface(코드를 이해하기 쉽게 해주는 객체지향 기법, 일반적으로 메서드의 연쇄 호출 형태로 구현됨)를 사용한다.
+
+**컨테이너 뷰 ID의 목적**
+* 액티비티 뷰의 어디에 프래그먼트 뷰가 나타나야 하는지를 FragmentManager에 알려준다
+* FragmentManager의 리스트에서 프래그먼트를 고유하게 식별하는 데 사용된다.
+
+
+## 프래그먼트 사용 시의 애플리케이션 아키텍처
+화면 모든 요소를 프래그먼트로 구분하게 되면 수 많은 프래그먼트를 관리하기 위해 코드가 지저분하게 된다. 그러므로 가급적 한 화면에는 두 개 또는 세 개 정도의 프래그먼트를 사용하는 것이 좋다.
+
+
+### 액티비티에서 프래그먼트를 사용하는 이유
+* **AUF** - Always Use Fragments , 항상 프래그먼트를 사용하자. 왜냐하면 후에 액티비티에 프래그먼트를 추가할 경우 변경해야 할 요소가 너무나 많기 때문이다.
+
+## 지원 라이브러리의 프래그먼트가 좋은 이유
+지원 라이브러리는 프래그먼트API를 지원하지 않는 과거 버전의 안드로이드에서 개발자들이 프래그먼트를 사용할 수 있도록 하기 위해 만들어졌다. 지원 라이브러리 프래그먼트를 사용하면 특정 표준 라이브러리를 사용하는거와 달리 버전이 업데이트되어도 지원 라이브러리 버전만 업데이트하면 되므로 쉽게 버전 관리가 가능하다. 
+
+
+
+
 
 
 
