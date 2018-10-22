@@ -5,32 +5,10 @@ import java.util.*
 
 
 class Crime {
-    private val mId: UUID
-    private var mTitle: String? = null
-    private var mDate: Date? = null
-    private var mSolved: Boolean = false
-
-    init {
-        mId = UUID.randomUUID()
-        mDate = Date()
-    }
-
-    fun getmId(): UUID {
-        return mId
-    }
-
-    fun getmTitle(): String? {
-        return mTitle
-    }
-
-    fun setmTitle(mTitle: String) {
-        this.mTitle = mTitle
-    }
-
-
-    fun setmDate(mDate: Date) {
-        this.mDate = mDate
-    }
+    val mId = UUID.randomUUID()
+    var mTitle: String? = null
+    val mDate = Date()
+    var mSolved: Boolean = false
 
     fun ismSolved(): Boolean {
         return mSolved

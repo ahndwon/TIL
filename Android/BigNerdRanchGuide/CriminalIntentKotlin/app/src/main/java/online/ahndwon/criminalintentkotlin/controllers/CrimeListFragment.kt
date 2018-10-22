@@ -23,10 +23,10 @@ class CrimeListFragment : Fragment() {
 
         fun bindCrime(crime: Crime) {
             itemView.setOnClickListener {
-                val intent = CrimePagerActivity.newIntent(itemView.context, crime.getmId())
+                val intent = CrimePagerActivity.newIntent(itemView.context, crime.mId)
                 startActivity(intent)
             }
-            itemView.titleTextView.text = crime.getmTitle()
+            itemView.titleTextView.text = crime.mTitle
             itemView.dateTextView.text = crime.getmDate()
             itemView.checkBox.isChecked = crime.ismSolved()
         }
