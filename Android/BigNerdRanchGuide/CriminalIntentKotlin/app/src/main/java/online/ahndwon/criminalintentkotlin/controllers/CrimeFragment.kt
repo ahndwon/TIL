@@ -1,5 +1,7 @@
 package online.ahndwon.criminalintentkotlin.controllers
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -20,6 +22,7 @@ class CrimeFragment : Fragment() {
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
         private const val DIALOG_DATE = "DialogDate"
+        private const val REQUEST_DATE = 0
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle()
@@ -50,10 +53,12 @@ class CrimeFragment : Fragment() {
         })
 
 
-        view.crimeDateButton.text = mCrime.getmDate()
+        updateDate()
         view.crimeDateButton.setOnClickListener { _ ->
 //            DatePickerFragment().show(fragmentManager, DIALOG_DATE)
-            DatePickerFragment.newInstance(mCrime.mDate).show(fragmentManager, DIALOG_DATE)
+            DatePickerFragment.newInstance(mCrime.mDate).apply {
+                setTargetFragment(this@CrimeFragment, REQUEST_DATE)
+            }.show(fragmentManager, DIALOG_DATE)
         }
 
         view.crime_solved.setOnCheckedChangeListener { _, isChecked -> mCrime.setmSolved(isChecked) }
@@ -62,4 +67,15 @@ class CrimeFragment : Fragment() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_DATE) {
+            val date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
+            mCrime.mDate = date
+            updateDate()
+        }
+    }
+
+    private fun updateDate() {
+        view?.crimeDateButton?.text = mCrime.getmDate()
+    }
 }

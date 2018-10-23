@@ -5,9 +5,9 @@ import java.util.*
 
 
 class Crime {
-    val mId = UUID.randomUUID()
+    val mId: UUID = UUID.randomUUID()
     var mTitle: String? = null
-    val mDate = Date()
+    var mDate = Date()
     var mSolved: Boolean = false
 
     fun ismSolved(): Boolean {
