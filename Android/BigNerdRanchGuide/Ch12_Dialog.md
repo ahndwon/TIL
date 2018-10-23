@@ -51,5 +51,17 @@ this.arguments= args
 이 메서드는 목표가 되는 프래그먼트와 요청 코드를 인자로 받는다. 여기서 요청 코드는 starActivityForResult(..)의 인자로 전달하는 것과 같은 의미의 코드다.
 
 
+### 목표 프래그먼트로 데이터 전달하기
+DatePickerFragment에서 CrimeFragment.onActivityResult(int, int, Intent) 메서드를 호출하면서 인자를 전달하면 된다.
+
+* Activity.onActivityResult(…)
+	ActivityManager가 부모 액티비티의  것을 (자식 액티비티가 끝난 후) 호출하는 메서드 액티비티를 처리할 때 Activity.onActivityResult(...)는 우리가 직접 호출하지 않는다. 그것은 ActivityManager의 일이기 때문. 그리고 액티비티가 그 메서드의 호출을 받은 후에 FragmentManager가 해당 프래그먼트의 Fragment.onActivityResult()를 호출한다.
+
+**Fragment.onActivityResult(…)의 인자**
+* `int requestCode `- 결과를 반환하는 목표 프래그먼트에 알려주기 위한 요청 코드, setTargetFragment(...)를 호출 시에 인자로 전달되었던 코드와 일치한다. 어떤 프래그먼트가 결과를 반환하는지 판단하는데 사용된다.
+* `int resultCold` - 조치할 액션을 결정하는 결과 코드
+* `Intent` - 엑스트라 데이터를 가질 수 있는 Intent 객체
+
+
 
 #android/실무에바로적용하는안드로이드
