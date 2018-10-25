@@ -7,13 +7,14 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_crime_pager.*
 import online.ahndwon.criminalintentkotlin.R
 import online.ahndwon.criminalintentkotlin.models.Crime
 import online.ahndwon.criminalintentkotlin.models.CrimeLab
 import java.util.*
 
-class CrimePagerActivity : FragmentActivity() {
+class CrimePagerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
