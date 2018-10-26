@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_crime.view.*
 import online.ahndwon.criminalintentkotlin.R
 import online.ahndwon.criminalintentkotlin.models.Crime
+import online.ahndwon.criminalintentkotlin.models.CrimeLab
 import java.util.*
 
 
@@ -78,4 +79,12 @@ class CrimeFragment : Fragment() {
     private fun updateDate() {
         view?.crimeDateButton?.text = mCrime.getmDate()
     }
+
+    override fun onPause() {
+        super.onPause()
+
+        CrimeLab.updateCrime(mCrime)
+    }
+
+
 }

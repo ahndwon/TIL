@@ -29,14 +29,17 @@ class CrimeListFragment : Fragment() {
                 val intent = CrimePagerActivity.newIntent(itemView.context, crime.mId)
                 startActivity(intent)
             }
-            itemView.titleTextView.text = crime.mTitle
+            crime.mTitle?.let {
+                itemView.titleTextView.text = it
+            }
+
             itemView.dateTextView.text = crime.getmDate()
             itemView.checkBox.isChecked = crime.ismSolved()
         }
 
     }
 
-    private inner class CrimeAdapter(private val mCrimes: List<Crime>) : RecyclerView.Adapter<CrimeHolder>() {
+    private inner class CrimeAdapter(private var mCrimes: List<Crime>) : RecyclerView.Adapter<CrimeHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
             val layoutInflater = LayoutInflater.from(activity)
@@ -52,6 +55,10 @@ class CrimeListFragment : Fragment() {
 
         override fun getItemCount(): Int {
             return mCrimes.count()
+        }
+
+        fun setCrimes(crimes: List<Crime>) {
+            mCrimes = crimes
         }
     }
 
@@ -86,6 +93,7 @@ class CrimeListFragment : Fragment() {
     private fun updateUI() {
         val crimes = CrimeLab.crimes
         val adapter = CrimeAdapter(crimes)
+        adapter.setCrimes(crimes)
         view?.crimeRecyclerView?.adapter = adapter
         view?.crimeRecyclerView?.layoutManager = LinearLayoutManager(view?.context)
         updateSubtitle()

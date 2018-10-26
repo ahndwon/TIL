@@ -5,10 +5,18 @@ import java.util.*
 
 
 class Crime {
-    val mId: UUID = UUID.randomUUID()
+    var mId: UUID = UUID.randomUUID()
     var mTitle: String? = null
     var mDate = Date()
     var mSolved: Boolean = false
+    constructor() {
+        Crime(UUID.randomUUID())
+    }
+
+    constructor(id: UUID) {
+        mId = id
+    }
+
 
     fun ismSolved(): Boolean {
         return mSolved
