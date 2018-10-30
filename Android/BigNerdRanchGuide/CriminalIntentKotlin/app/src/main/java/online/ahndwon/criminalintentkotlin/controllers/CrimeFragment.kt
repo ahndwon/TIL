@@ -1,11 +1,11 @@
 package online.ahndwon.criminalintentkotlin.controllers
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +53,6 @@ class CrimeFragment : Fragment() {
             }
         })
 
-
         updateDate()
         view.crimeDateButton.setOnClickListener { _ ->
 //            DatePickerFragment().show(fragmentManager, DIALOG_DATE)
@@ -64,8 +63,15 @@ class CrimeFragment : Fragment() {
 
         view.crime_solved.setOnCheckedChangeListener { _, isChecked -> mCrime.setmSolved(isChecked) }
 
-        return view
+        view.crimeReport.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport())
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
+            startActivity(intent)
+        }
 
+        return view
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -82,9 +88,35 @@ class CrimeFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-
         CrimeLab.updateCrime(mCrime)
     }
 
+    private fun getCrimeReport() : String{
+        val solvedString = if (mCrime.ismSolved()) {
+            getString(R.string.crime_report_solved)
+        } else {
+            getString(R.string.crime_report_unsolved)
+        }
 
+        val dateFormat = "EEE, MMM dd"
+        val dateString = DateFormat.format(dateFormat, mCrime.mDate).toString()
+
+        var suspect = mCrime.suspect
+        suspect = if (suspect == null) {
+            getString(R.string.crime_report_no_suspect)
+        } else {
+            String.format(getString(R.string.crime_report_suspect), suspect)
+        }
+
+        return getString(R.string.crime_report, mCrime.mTitle, dateString, solvedString, suspect)
+    }
+
+    fun onClick(view: View) {
+        var intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport())
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
+        intent = Intent.createChooser(intent, getString(R.string.send_report))
+        startActivity(intent)
+    }
 }

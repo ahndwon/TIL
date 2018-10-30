@@ -4,7 +4,7 @@ class CrimeDbSchema {
     companion object {
         class CrimeTable {
             companion object {
-                const val NAME = "crimes";
+                const val NAME = "crimes"
             }
         }
 
@@ -14,7 +14,7 @@ class CrimeDbSchema {
                 const val TITLE = "title"
                 const val DATE = "date"
                 const val SOLVED = "solved"
-
+                const val SUSPECT = "suspect"
             }
         }
     }

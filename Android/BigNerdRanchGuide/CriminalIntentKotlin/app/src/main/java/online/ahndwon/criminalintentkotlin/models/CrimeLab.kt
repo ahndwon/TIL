@@ -33,6 +33,7 @@ object CrimeLab {
         values.put(Cols.TITLE, crime.mTitle)
         values.put(Cols.DATE, crime.mDate.time)
         values.put(Cols.SOLVED, if (crime.ismSolved()) 1 else 0)
+        values.put(Cols.SUSPECT, crime.suspect)
 
         return values
     }

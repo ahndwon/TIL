@@ -9,6 +9,8 @@ class Crime {
     var mTitle: String? = null
     var mDate = Date()
     var mSolved: Boolean = false
+    var suspect: String? = null
+
     constructor() {
         Crime(UUID.randomUUID())
     }
