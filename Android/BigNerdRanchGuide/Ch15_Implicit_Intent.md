@@ -42,11 +42,47 @@ startActivity(intent)
 * 액티비티가 최상위 수준의 앱으로 론처에 보여야 하면 -> android.intent.category.LAUNCHER 카테고리를 사용
 
 
+## 전송 인텐트
+```kotlin
+val intent = Intent(Intent.ACTION_SEND)
+intent.type= "text/plain"
+intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport())
+intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
+startActivity(intent)
+```
+
+
+## 연락처 요청 인텐트
+`val pickContact = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)`
 
 
 
+### 연락처 리스트에서 데이터 가져오기
+안드로이드는 ContentProvider를 통해 연락처 정보와 함께 동작하는 상세한 API를 제공함. 이 클래스의 인스턴스들은 데이터베이스를 포함하며 그것을 다른 애플리케이션에서 사용할 수 있게 해준다.
+**ContentResolver**를 통해 ContentProvider를 액세스할 수 있다.
+
+startActivityForResult(…)를 통해 ACTION_PICK 인텐트를 인자로 전달하면 onActivityResult()를 통해 데이터URI를 가진 인텐트를 돌려받게 된다. 
 
 
+## 응답하는 액티비티 확인하기
+암시적 인텐트로 하고자 하는 행동을 수행할 수 있는 앱이 없는 경우엔 앱이 중단된다.
+-> PackageManager를 통해 먼저 앱이 있는지 확인해서 해결
+
+```kotlin
+override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+	val packageManager = activity?.packageManager
+	packageManager?.let{
+	if (it.resolveActivity(pickContact, 	PackageManager.MATCH_DEFAULT_ONLY) == null) {
+        crimeSuspect.isEnabled= false
+    }
+}
+
+```
+
+**PackageManager**
+* 안드로이드 장치에 설치된 모든 컴포넌트와 그것의 액티비티를 알고 있다.
+* `resolveActivity(Intent, Int)` 를 통해 인텐트와 일치하는 액티비티를 찾아 볼 수 있음. 두번째 인자로 플래그를 전달하면 그 플래그를 갖는 액티비티들을 대상으로 찾음
 
 
 #android/실무에바로적용하는안드로이드

@@ -1,7 +1,9 @@
 package online.ahndwon.criminalintentkotlin.controllers
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +11,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_crime.*
 import kotlinx.android.synthetic.main.fragment_crime.view.*
 import online.ahndwon.criminalintentkotlin.R
 import online.ahndwon.criminalintentkotlin.models.Crime
@@ -24,6 +27,7 @@ class CrimeFragment : Fragment() {
         private const val ARG_CRIME_ID = "crime_id"
         private const val DIALOG_DATE = "DialogDate"
         private const val REQUEST_DATE = 0
+        private const val REQUEST_CONTACT = 1
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle()
@@ -71,6 +75,23 @@ class CrimeFragment : Fragment() {
             startActivity(intent)
         }
 
+        val pickContact = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+//        pickContact.addCategory(Intent.CATEGORY_HOME)
+        view.crimeSuspect.setOnClickListener {
+            startActivityForResult(pickContact, REQUEST_CONTACT)
+        }
+
+        mCrime.suspect?.let {
+            view.crimeSuspect.text = it
+        }
+
+        val packageManager = activity?.packageManager
+        packageManager?.let {
+            if (it.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
+                view.crimeSuspect.isEnabled = false
+            }
+        }
+
         return view
     }
 
@@ -79,6 +100,28 @@ class CrimeFragment : Fragment() {
             val date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
             mCrime.mDate = date
             updateDate()
+        } else if (requestCode == REQUEST_CONTACT && data != null) {
+            val contactUri = data.data ?: return
+
+            // 값을 반환할 쿼리 필드 지정
+            val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+            // 쿼리 수행
+            // contactUri는 SQL의 'where'에 해당됨
+
+            val c = activity?.contentResolver?.query(contactUri, queryFields,
+                null,null,null)
+
+            c.use { c ->
+                if (c?.count == 0) {
+                    return
+                }
+
+                c?.moveToFirst()
+
+                val suspect = c?.getString(0)
+                mCrime.suspect = suspect
+                crimeSuspect.text = suspect
+            }
         }
     }
 
