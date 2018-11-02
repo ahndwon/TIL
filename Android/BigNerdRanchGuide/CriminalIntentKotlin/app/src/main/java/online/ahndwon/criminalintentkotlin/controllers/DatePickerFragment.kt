@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
-import kotlinx.android.synthetic.main.dialog_date.*
 import kotlinx.android.synthetic.main.dialog_date.view.*
 import online.ahndwon.criminalintentkotlin.R
 import java.util.*
