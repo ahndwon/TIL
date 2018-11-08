@@ -2,9 +2,12 @@ package online.ahndwon.criminalintentkotlin.controllers
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
@@ -13,9 +16,13 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_crime.*
 import kotlinx.android.synthetic.main.fragment_crime.view.*
+import kotlinx.android.synthetic.main.view_camera_and_title.*
+import kotlinx.android.synthetic.main.view_camera_and_title.view.*
 import online.ahndwon.criminalintentkotlin.R
 import online.ahndwon.criminalintentkotlin.models.Crime
 import online.ahndwon.criminalintentkotlin.models.CrimeLab
+import online.ahndwon.criminalintentkotlin.utils.PictureUtils
+import java.io.File
 import java.util.*
 
 
@@ -23,11 +30,14 @@ class CrimeFragment : Fragment() {
 
 
     private var mCrime = Crime()
+    private var photoFile: File? = null
+
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
         private const val DIALOG_DATE = "DialogDate"
         private const val REQUEST_DATE = 0
         private const val REQUEST_CONTACT = 1
+        private const val REQUEST_PHOTO = 2
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle()
@@ -40,6 +50,10 @@ class CrimeFragment : Fragment() {
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        photoFile = this.context?.let { CrimeLab.getPhotoFile(it, mCrime) }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_crime, container, false)
@@ -57,9 +71,11 @@ class CrimeFragment : Fragment() {
             }
         })
 
+
+
         updateDate()
         view.crimeDateButton.setOnClickListener { _ ->
-//            DatePickerFragment().show(fragmentManager, DIALOG_DATE)
+            //            DatePickerFragment().show(fragmentManager, DIALOG_DATE)
             DatePickerFragment.newInstance(mCrime.mDate).apply {
                 setTargetFragment(this@CrimeFragment, REQUEST_DATE)
             }.show(fragmentManager, DIALOG_DATE)
@@ -92,6 +108,32 @@ class CrimeFragment : Fragment() {
             }
         }
 
+        val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        packageManager ?: return view
+        val canTakePhoto = photoFile != null &&
+                captureImage.resolveActivity(packageManager) != null
+        view.photoButton.isEnabled = canTakePhoto
+
+        if (canTakePhoto) {
+//            val uri = Uri.fromFile(photoFile)
+            this.context?.let {
+                photoFile?.let { photoFile ->
+                    captureImage.putExtra(MediaStore.EXTRA_OUTPUT,
+                        FileProvider.getUriForFile(it, it.packageName +".fileprovider",
+                            photoFile))
+                    captureImage.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            }
+
+        }
+
+        view.photoButton.setOnClickListener {
+            startActivityForResult(captureImage, REQUEST_PHOTO)
+        }
+
+        updatePhotoView()
+
         return view
     }
 
@@ -109,7 +151,7 @@ class CrimeFragment : Fragment() {
             // contactUri는 SQL의 'where'에 해당됨
 
             val c = activity?.contentResolver?.query(contactUri, queryFields,
-                null,null,null)
+                    null, null, null)
 
             c.use { c ->
                 if (c?.count == 0) {
@@ -122,6 +164,8 @@ class CrimeFragment : Fragment() {
                 mCrime.suspect = suspect
                 crimeSuspect.text = suspect
             }
+        } else if (requestCode == REQUEST_PHOTO) {
+            updatePhotoView()
         }
     }
 
@@ -134,7 +178,7 @@ class CrimeFragment : Fragment() {
         CrimeLab.updateCrime(mCrime)
     }
 
-    private fun getCrimeReport() : String{
+    private fun getCrimeReport(): String {
         val solvedString = if (mCrime.ismSolved()) {
             getString(R.string.crime_report_solved)
         } else {
@@ -161,5 +205,18 @@ class CrimeFragment : Fragment() {
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
         intent = Intent.createChooser(intent, getString(R.string.send_report))
         startActivity(intent)
+    }
+
+    fun updatePhotoView() {
+        if (photoFile == null) {
+            photoView.setImageDrawable(null)
+        } else {
+            val bitmap = photoFile?.path?.let { path ->
+                activity?.let { activity ->
+                    PictureUtils.getScaledBitmap(path, activity)
+                }
+            }
+            photoView.setImageBitmap(bitmap)
+        }
     }
 }

@@ -33,4 +33,8 @@ class Crime {
         return dateFormat.format(mDate)
     }
 
+    fun getPhotoFileName() : String{
+        return "IMG_$mId.jpg"
+    }
+
 }

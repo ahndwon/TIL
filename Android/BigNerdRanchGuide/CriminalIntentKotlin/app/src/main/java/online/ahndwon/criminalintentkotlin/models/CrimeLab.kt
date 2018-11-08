@@ -4,10 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.os.Environment
 import online.ahndwon.criminalintentkotlin.database.CrimeBaseHelper
 import online.ahndwon.criminalintentkotlin.database.CrimeCursorWrapper
 import online.ahndwon.criminalintentkotlin.database.CrimeDbSchema.Companion.CrimeTable
 import online.ahndwon.criminalintentkotlin.database.CrimeDbSchema.Companion.Cols
+import java.io.File
+import java.io.FileNotFoundException
 import java.util.*
 
 
@@ -94,6 +97,13 @@ object CrimeLab {
         } finally {
             cursor.close()
         }
+    }
+
+    fun getPhotoFile(context: Context, crime: Crime): File? {
+        val externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                ?: return null
+
+        return File(externalFilesDir, crime.getPhotoFileName())
     }
 
 
