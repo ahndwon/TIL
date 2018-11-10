@@ -1,7 +1,9 @@
 package online.ahndwon.beatbox
 
-class Sound(private val assetPath: String) {
+class Sound(val assetPath: String) {
     val name : String
+    var soundId : Int? = null
+
     init {
         val components = assetPath.split("/")
         val fileName = components[components.size - 1]
