@@ -8,26 +8,28 @@ import android.graphics.Point
 class PictureUtils {
     companion object {
         fun getScaledBitmap(path: String, destWidth: Int, destHeight: Int) : Bitmap {
-            var options = BitmapFactory.Options()
+            val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
             BitmapFactory.decodeFile(path, options)
 
             val srcWidth = options.outWidth.toDouble()
             val srcHeight = options.outHeight.toDouble()
 
-            var inSampleSize = 1
+//            var inSampleSize = 1
 
-            if (srcHeight > destHeight || srcWidth > destWidth) {
-                inSampleSize = if (srcWidth > srcHeight) {
+            val inSampleSize = if (srcHeight > destHeight || srcWidth > destWidth) {
+                if (srcWidth > srcHeight) {
                     Math.round(srcHeight / destHeight).toInt()
                 } else {
                     Math.round(srcWidth / destWidth).toInt()
                 }
+            } else 1
+
+            BitmapFactory.Options().let {
+                it.inSampleSize = inSampleSize
+                return BitmapFactory.decodeFile(path, it)
             }
 
-            options = BitmapFactory.Options()
-            options.inSampleSize = inSampleSize
-            return BitmapFactory.decodeFile(path, options)
         }
 
         fun getScaledBitmap(path: String, activity: Activity): Bitmap {

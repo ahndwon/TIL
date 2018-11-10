@@ -2,7 +2,7 @@
 <paths>
     <files-path name="name" path="path" /> <!-- Context.getFilesDir(). -->
     <cache-path name="name" path="path" /> <!-- getCacheDir(). -->
-    <external-path name="name" path="path" /> <!-- Environment.getExternalStorageDirectory(). -->
+    <external-path name="my_images" path="." /> <!-- Environment.getExternalStorageDirectory(). -->
     <external-files-path name="name" path="path" /> <!-- Context#getExternalFilesDir(String) Context.getExternalFilesDir(null). -->
     <external-cache-path name="name" path="path" /> <!-- Context.getExternalCacheDir(). -->
 </paths>

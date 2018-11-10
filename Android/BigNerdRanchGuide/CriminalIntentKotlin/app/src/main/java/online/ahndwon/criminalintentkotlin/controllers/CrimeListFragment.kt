@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_crime_list.view.*
 import kotlinx.android.synthetic.main.list_item_crime.view.*
 import online.ahndwon.criminalintentkotlin.R
@@ -17,9 +16,17 @@ import online.ahndwon.criminalintentkotlin.models.CrimeLab
 class CrimeListFragment : Fragment() {
     private var mAdapter: CrimeAdapter? = null
     private var isSubtitleVisible = false
+    var onCrimeSelected : ((Crime) -> Unit)? = null
+
+    private val adapter = CrimeAdapter(emptyList())
+
 
     companion object {
         const val SAVED_SUBTITLE_VISIBLE = "subtitle"
+    }
+
+    interface Callbacks {
+        fun onCrimeSelected(crime: Crime)
     }
 
     private inner class CrimeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,6 +42,8 @@ class CrimeListFragment : Fragment() {
 
             itemView.dateTextView.text = crime.getmDate()
             itemView.checkBox.isChecked = crime.ismSolved()
+
+            itemView.setOnClickListener { onCrimeSelected?.invoke(crime) }
         }
 
     }
@@ -61,6 +70,8 @@ class CrimeListFragment : Fragment() {
             mCrimes = crimes
         }
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,11 +101,12 @@ class CrimeListFragment : Fragment() {
         updateUI()
     }
 
-    private fun updateUI() {
+    fun updateUI() {
         val crimes = CrimeLab.crimes
-        val adapter = CrimeAdapter(crimes)
         adapter.setCrimes(crimes)
         view?.crimeRecyclerView?.adapter = adapter
+        view?.crimeRecyclerView?.adapter?.notifyDataSetChanged()
+
         view?.crimeRecyclerView?.layoutManager = LinearLayoutManager(view?.context)
         updateSubtitle()
     }
@@ -117,11 +129,13 @@ class CrimeListFragment : Fragment() {
             R.id.menu_item_new_crime -> {
                 val crime = Crime()
                 CrimeLab.crimes.add(crime)
-                activity?.let {
-                    val intent = CrimePagerActivity.newIntent(it, crime.mId)
-                    startActivity(intent)
-                    return true
-                }
+//                activity?.let {
+//                    val intent = CrimePagerActivity.newIntent(it, crime.mId)
+//                    startActivity(intent)
+//                    return true
+//                }
+                updateUI()
+                return true
             }
 
             R.id.menu_item_show_subtitle-> {

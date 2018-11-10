@@ -74,6 +74,7 @@ object CrimeLab {
             null,
             null
         )
+        cursor?.close()
         cursor?.let {
             return CrimeCursorWrapper(it)
         }
@@ -85,17 +86,15 @@ object CrimeLab {
         val cursor = queryCrimes(Cols.UUID + " = ?",
             Array (1){ id.toString()}) as CrimeCursorWrapper
 
-        try {
-            cursor?.let {
-                if (cursor.count == 0) {
+        cursor.use { c ->
+            c.let {
+                if (c.count == 0) {
                     return null
                 }
 
-                cursor.moveToFirst()
-                return cursor.getCrime()
+                c.moveToFirst()
+                return c.getCrime()
             }
-        } finally {
-            cursor.close()
         }
     }
 
@@ -105,18 +104,4 @@ object CrimeLab {
 
         return File(externalFilesDir, crime.getPhotoFileName())
     }
-
-
-//    fun queryCrimes(whereClause: String, whereArgs: Array<String>): CrimeCursorWrapper {
-//        val cursor = database?.query {
-//            CrimeTable.NAME,
-//            null,
-//            whereClause,
-//            whereArgs,
-//            null,
-//            null,
-//            null
-//
-//        }
-//    }
 }
