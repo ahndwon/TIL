@@ -30,7 +30,6 @@ import java.util.*
 
 class CrimeFragment : Fragment() {
 
-
     private var mCrime = Crime()
     private var photoFile: File? = null
     var onCrimeUpdate: ((Crime) -> Unit)? = null
