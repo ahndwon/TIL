@@ -22,8 +22,6 @@ class BeatBox(context: Context) {
         const val MAX_SOUNDS = 5
     }
 
-    val TAG: String = "BeatBox"
-
     private fun loadSounds() {
         try {
             val soundNames = assets.list(SOUNDS_FOLDER)

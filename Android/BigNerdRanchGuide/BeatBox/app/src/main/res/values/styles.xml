@@ -9,9 +9,9 @@
         <item name="android:colorBackground">@color/soothing_blue</item>
     </style>
 
-    <style name="BeatBoxButton">
-        <item name="android:background">@color/dark_blue</item>
-    </style>
+    <!--<style name="BeatBoxButton">-->
+        <!--<item name="android:background">@color/dark_blue</item>-->
+    <!--</style>-->
 
     <style name="BeatBoxButton.Strong">
         <item name="android:textStyle">bold</item>
@@ -21,6 +21,8 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-
+    <style name="BeatBoxButton" parent="android:style/Widget.Holo.Button">
+        <item name="android:background">@drawable/button_beat_box</item>
+    </style>
 
 </resources>

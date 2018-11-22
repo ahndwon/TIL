@@ -1,10 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list_item_sound_button"
-        style="@style/StrongBeatBoxButton"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:text="Sound name"
->
+<?xml version="1.0" encoding="utf-8"?><!--<Button xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:id="@+id/list_item_sound_button"--><!--style="@style/StrongBeatBoxButton"--><!--android:layout_width="match_parent"--><!--android:layout_height="120dp"--><!--android:text="Sound name"--><!--&gt;-->
 
-</Button>
+<!--</Button>-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp">
+
+    <Button
+        android:id="@+id/list_item_sound_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        style="@style/BeatBoxButton"
+        tools:text="Sound name"
+        />
+
+</FrameLayout>
