@@ -1,11 +1,13 @@
 package online.ahndwon.photogallery
 
+import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Gallery
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,18 +26,19 @@ class PhotoGalleryFragment : Fragment() {
     var mItems = ArrayList<GalleryItem>()
 
     class PhotoHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val titleTextView = view as TextView
+        private val galleryImageView = view as ImageView
 
-        fun bindGalleryItem(item: GalleryItem) {
-            titleTextView.text = item.toString()
+        fun bindGalleryItem(drawable: Drawable) {
+            galleryImageView.setImageDrawable(drawable)
         }
     }
 
-    class PhotoAdapter(val items: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
+    inner class PhotoAdapter(val items: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
-            val textView = TextView(parent.context)
-            return PhotoHolder(textView)
+            val inflater = LayoutInflater.from(activity)
+            val view = inflater.inflate(R.layout.gallery_item, parent, false)
+            return PhotoHolder(view)
         }
 
         override fun getItemCount(): Int {
@@ -44,7 +47,7 @@ class PhotoGalleryFragment : Fragment() {
 
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
             val galleryItem = items[position]
-            holder.bindGalleryItem(galleryItem)
+//            holder.bindGalleryItem(galleryItem)
         }
     }
 
