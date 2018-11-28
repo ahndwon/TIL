@@ -3,6 +3,7 @@ package online.ahndwon.photogallery
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ class PhotoGalleryFragment : Fragment() {
     }
 
     var mItems = ArrayList<GalleryItem>()
+    var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>? = null
 
     class PhotoHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val galleryImageView = view as ImageView
@@ -48,6 +50,9 @@ class PhotoGalleryFragment : Fragment() {
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
             val galleryItem = items[position]
 //            holder.bindGalleryItem(galleryItem)
+            val placeholder = resources.getDrawable(R.drawable.bill_up_close, null)
+            holder.bindGalleryItem(placeholder)
+            thumbnailDownloader?.queueThumbnail(holder, galleryItem.url)
         }
     }
 
@@ -55,6 +60,11 @@ class PhotoGalleryFragment : Fragment() {
         super.onCreate(savedInstanceState)
         retainInstance = true
         FetchItemsTask().execute()
+
+        thumbnailDownloader = ThumbnailDownloader()
+        thumbnailDownloader?.start()
+        thumbnailDownloader?.looper
+        Log.i(TAG, "Background thread started")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -79,9 +89,15 @@ class PhotoGalleryFragment : Fragment() {
         }
 
         override fun onPostExecute(result: ArrayList<GalleryItem>) {
+            Log.d(TAG, "result : $result")
             mItems = result
             view?.photoRecyclerView?.let { setupAdapter(it) }
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        thumbnailDownloader?.quit()
+        Log.i(TAG, "Background thread destroyed")
+    }
 }

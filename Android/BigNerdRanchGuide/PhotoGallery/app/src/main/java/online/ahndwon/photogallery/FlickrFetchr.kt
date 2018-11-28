@@ -60,7 +60,7 @@ class FlickrFetchr {
                 .buildUpon()
                 .appendQueryParameter("method", "flickr.photos.getRecent")
                 .appendQueryParameter("api_key", API_KEY)
-                .appendQueryParameter("formant", "json")
+                .appendQueryParameter("format", "json")
                 .appendQueryParameter("nojsoncallback", "1")
                 .appendQueryParameter("extras", "url_s")
                 .build().toString()
