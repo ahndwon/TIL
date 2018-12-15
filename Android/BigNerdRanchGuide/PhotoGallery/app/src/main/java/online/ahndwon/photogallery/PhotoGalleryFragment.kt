@@ -1,8 +1,11 @@
 package online.ahndwon.photogallery
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +33,7 @@ class PhotoGalleryFragment : Fragment() {
     class PhotoHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val galleryImageView = view as ImageView
 
-        fun bindGalleryItem(drawable: Drawable) {
+        fun bindDrawable(drawable: Drawable) {
             galleryImageView.setImageDrawable(drawable)
         }
     }
@@ -49,9 +52,8 @@ class PhotoGalleryFragment : Fragment() {
 
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
             val galleryItem = items[position]
-//            holder.bindGalleryItem(galleryItem)
             val placeholder = resources.getDrawable(R.drawable.bill_up_close, null)
-            holder.bindGalleryItem(placeholder)
+            holder.bindDrawable(placeholder)
             thumbnailDownloader?.queueThumbnail(holder, galleryItem.url)
         }
     }
@@ -61,7 +63,14 @@ class PhotoGalleryFragment : Fragment() {
         retainInstance = true
         FetchItemsTask().execute()
 
-        thumbnailDownloader = ThumbnailDownloader()
+        val responseHandler = Handler()
+        thumbnailDownloader = ThumbnailDownloader(responseHandler)
+        thumbnailDownloader?.mThumbnailDownloadListener = object: ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder> {
+            override fun onThumbnailDownloaded(target: PhotoHolder, thumbnail: Bitmap) {
+                val drawable = BitmapDrawable(resources, thumbnail)
+                target.bindDrawable(drawable)
+            }
+        }
         thumbnailDownloader?.start()
         thumbnailDownloader?.looper
         Log.i(TAG, "Background thread started")
@@ -93,6 +102,11 @@ class PhotoGalleryFragment : Fragment() {
             mItems = result
             view?.photoRecyclerView?.let { setupAdapter(it) }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        thumbnailDownloader?.clearQueue()
     }
 
     override fun onDestroy() {
