@@ -7,12 +7,11 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Gallery
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +60,9 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        FetchItemsTask().execute()
+        setHasOptionsMenu(true)
+        updateItems()
+
 
         val responseHandler = Handler()
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
@@ -74,6 +75,32 @@ class PhotoGalleryFragment : Fragment() {
         thumbnailDownloader?.start()
         thumbnailDownloader?.looper
         Log.i(TAG, "Background thread started")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.fragment_photo_gallery, menu)
+
+        val searchItem = menu?.findItem(R.id.menu_item_search)
+        val searchView = searchItem?.actionView as SearchView?
+
+        searchView?.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d(PhotoGalleryFragment::class.java.name, " QueryTextChange $newText")
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.d(PhotoGalleryFragment::class.java.name, " QueryTextSubmit $query")
+                updateItems()
+                return true
+            }
+
+        })
+    }
+
+    fun updateItems() {
+        FetchItemsTask().execute()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -94,7 +121,13 @@ class PhotoGalleryFragment : Fragment() {
 
     inner class FetchItemsTask : AsyncTask<Void, Void, ArrayList<GalleryItem>>() {
         override fun doInBackground(vararg params: Void?): ArrayList<GalleryItem> {
-            return FlickrFetchr().fetchItems()
+            val query = "robot"
+
+            return if (query == null) {
+                FlickrFetchr().fetchRecentPhotos()
+            } else {
+                FlickrFetchr().searchPhotos(query)
+            }
         }
 
         override fun onPostExecute(result: ArrayList<GalleryItem>) {

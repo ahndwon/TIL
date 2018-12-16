@@ -15,6 +15,15 @@ class FlickrFetchr {
     companion object {
         val TAG = FlickrFetchr::class.java.name
         const val API_KEY = "9a0e0796dc9cbd9d447201e5209a3892"
+        const val FETCH_RECENTS_METHOD = "flickr.photos.getRecent"
+        const val SEARCH_METHOD = "flickr.photos.search"
+        val ENDPOINT = Uri.parse("https://api.flickr.comservices/rest/")
+            .buildUpon()
+            .appendQueryParameter("api_key", API_KEY)
+            .appendQueryParameter("format", "json")
+            .appendQueryParameter("nojsoncallback", "1")
+            .appendQueryParameter("extras", "url_s")
+            .build()
     }
 
     @Throws(IOException::class)
@@ -34,13 +43,6 @@ class FlickrFetchr {
 
             out.use { inputStream.copyTo(it)}
 
-//            var bytesRead = 0
-//            val buffer = ByteArray(1024) { 0 }
-//            while ((bytesRead) >= 0) {
-//                bytesRead = inputStream.read(buffer)
-//                out.write(buffer, 0, bytesRead)
-//            }
-//            out.close()
             return out.toByteArray()
         } finally {
             connection.disconnect()
@@ -54,16 +56,16 @@ class FlickrFetchr {
         return String(getUrlBytes(urlSpec))
     }
 
-    fun fetchItems() : ArrayList<GalleryItem>{
+    fun downloadGalleryItems(url: String) : ArrayList<GalleryItem>{
         try {
-            val url = Uri.parse("https://api.flickr.com/services/rest/")
-                .buildUpon()
-                .appendQueryParameter("method", "flickr.photos.getRecent")
-                .appendQueryParameter("api_key", API_KEY)
-                .appendQueryParameter("format", "json")
-                .appendQueryParameter("nojsoncallback", "1")
-                .appendQueryParameter("extras", "url_s")
-                .build().toString()
+//            val url = Uri.parse("https://api.flickr.com/services/rest/")
+//                .buildUpon()
+//                .appendQueryParameter("method", "flickr.photos.getRecent")
+//                .appendQueryParameter("api_key", API_KEY)
+//                .appendQueryParameter("format", "json")
+//                .appendQueryParameter("nojsoncallback", "1")
+//                .appendQueryParameter("extras", "url_s")
+//                .build().toString()
 
             val jsonString = getUrlString(url)
 
@@ -78,6 +80,26 @@ class FlickrFetchr {
         }
 
         return items
+    }
+
+    fun fetchRecentPhotos(): ArrayList<GalleryItem> {
+        val url = buildUrl(FETCH_RECENTS_METHOD, null)
+        return downloadGalleryItems(url)
+    }
+
+    fun searchPhotos(query: String): ArrayList<GalleryItem> {
+        val url = buildUrl(SEARCH_METHOD, query)
+        return downloadGalleryItems(url)
+    }
+
+    private fun buildUrl(method: String, query: String?) : String {
+        val uriBuilder = ENDPOINT.buildUpon()
+            .appendQueryParameter("method", method)
+
+        if (method == SEARCH_METHOD) {
+            uriBuilder.appendQueryParameter("text", query)
+        }
+        return uriBuilder.build().toString()
     }
 
     @Throws(IOException::class)
