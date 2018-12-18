@@ -63,6 +63,11 @@ class PhotoGalleryFragment : Fragment() {
         setHasOptionsMenu(true)
         updateItems()
 
+        activity?.let {
+            val intent = PollService.newIntent(it)
+            it.startService(intent)
+        }
+
 
         val responseHandler = Handler()
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
