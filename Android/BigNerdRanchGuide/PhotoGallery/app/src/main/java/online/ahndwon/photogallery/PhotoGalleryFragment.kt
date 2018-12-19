@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_photo_gallery.view.*
 
-class PhotoGalleryFragment : Fragment() {
+class PhotoGalleryFragment : VisibleFragment() {
     companion object {
         val TAG: String = PhotoGalleryFragment::class.java.name
 
@@ -63,6 +63,8 @@ class PhotoGalleryFragment : Fragment() {
         setHasOptionsMenu(true)
         updateItems()
 
+//        activity?.let { PollService.setServiceAlarm(it, true) }
+
         activity?.let {
             val intent = PollService.newIntent(it)
             it.startService(intent)
@@ -71,12 +73,13 @@ class PhotoGalleryFragment : Fragment() {
 
         val responseHandler = Handler()
         thumbnailDownloader = ThumbnailDownloader(responseHandler)
-        thumbnailDownloader?.mThumbnailDownloadListener = object: ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder> {
-            override fun onThumbnailDownloaded(target: PhotoHolder, thumbnail: Bitmap) {
-                val drawable = BitmapDrawable(resources, thumbnail)
-                target.bindDrawable(drawable)
-            }
-        }
+        thumbnailDownloader?.mThumbnailDownloadListener =
+                object : ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder> {
+                    override fun onThumbnailDownloaded(target: PhotoHolder, thumbnail: Bitmap) {
+                        val drawable = BitmapDrawable(resources, thumbnail)
+                        target.bindDrawable(drawable)
+                    }
+                }
         thumbnailDownloader?.start()
         thumbnailDownloader?.looper
         Log.i(TAG, "Background thread started")
@@ -89,23 +92,38 @@ class PhotoGalleryFragment : Fragment() {
         val searchItem = menu?.findItem(R.id.menu_item_search)
         val searchView = searchItem?.actionView as SearchView?
 
-        searchView?.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?): Boolean {
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
                 Log.d(PhotoGalleryFragment::class.java.name, " QueryTextChange $newText")
                 return false
             }
 
-            override fun onQueryTextSubmit(query: String?): Boolean {
+            override fun onQueryTextSubmit(query: String): Boolean {
                 Log.d(PhotoGalleryFragment::class.java.name, " QueryTextSubmit $query")
+                activity?.let { QueryPreferences.setStoredQuery(it, query) }
                 updateItems()
                 return true
             }
 
         })
+
+        searchView?.setOnSearchClickListener {
+            val query = activity?.let { it1 -> QueryPreferences.getStoredQuery(it1) }
+            searchView.setQuery(query, false)
+        }
+
+        val toggleItem = menu?.findItem(R.id.menu_item_toggle_polling)
+        activity?.let {
+            if (PollService.isServiceAlarm(it)) {
+                toggleItem?.setTitle(R.string.stop_polling)
+            } else toggleItem?.setTitle(R.string.start_polling)
+        }
+
     }
 
     fun updateItems() {
-        FetchItemsTask().execute()
+        val query = activity?.let { QueryPreferences.getStoredQuery(it) }
+        FetchItemsTask(query).execute()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -124,10 +142,33 @@ class PhotoGalleryFragment : Fragment() {
         }
     }
 
-    inner class FetchItemsTask : AsyncTask<Void, Void, ArrayList<GalleryItem>>() {
-        override fun doInBackground(vararg params: Void?): ArrayList<GalleryItem> {
-            val query = "robot"
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_item_clear -> {
+                activity?.let {
+                    QueryPreferences.setStoredQuery(it, null)
+                }
+                updateItems()
+                return true
+            }
 
+            R.id.menu_item_toggle_polling -> {
+                activity?.let {
+                    val shouldStartAlarm = !PollService.isServiceAlarm(it)
+                    PollService.setServiceAlarm(it, shouldStartAlarm)
+                    it.invalidateOptionsMenu()
+                    return true
+                }
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    inner class FetchItemsTask(val query: String?) : AsyncTask<Void, Void, ArrayList<GalleryItem>>() {
+        override fun doInBackground(vararg params: Void?): ArrayList<GalleryItem> {
             return if (query == null) {
                 FlickrFetchr().fetchRecentPhotos()
             } else {
