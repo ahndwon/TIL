@@ -6,5 +6,5 @@ want_to_do
 - ASMR social app
 - weather based daily outfit recommendation app
 - make a github app that can commit and push
--test
+-test2
 #wtd
