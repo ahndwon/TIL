@@ -17,7 +17,7 @@ class FlickrFetchr {
         const val API_KEY = "9a0e0796dc9cbd9d447201e5209a3892"
         const val FETCH_RECENTS_METHOD = "flickr.photos.getRecent"
         const val SEARCH_METHOD = "flickr.photos.search"
-        val ENDPOINT = Uri.parse("https://api.flickr.comservices/rest/")
+        val ENDPOINT = Uri.parse("https://api.flickr.com/services/rest/")
             .buildUpon()
             .appendQueryParameter("api_key", API_KEY)
             .appendQueryParameter("format", "json")
@@ -117,7 +117,8 @@ class FlickrFetchr {
                 continue
             }
             val url = photoJsonObject.getString("url_s")
-            val item = GalleryItem(caption, id, url)
+            val owner = photoJsonObject.getString("owner")
+            val item = GalleryItem(caption, id, url, owner)
 
             items.add(item)
         }

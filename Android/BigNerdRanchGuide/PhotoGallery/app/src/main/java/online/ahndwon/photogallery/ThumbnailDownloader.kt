@@ -54,10 +54,12 @@ class ThumbnailDownloader<T>(private var mResponseHandler: Handler) : HandlerThr
             Log.i(ThumbnailDownloader::class.java.name, "Bitmap Created")
 
             mResponseHandler.post {
-                if (mRequestMap[target] != null) {
+                Log.i(ThumbnailDownloader::class.java.name, "post")
+                if (mRequestMap[target] == null) {
                     return@post
                 }
                 mRequestMap.remove(target)
+                Log.i(ThumbnailDownloader::class.java.name, "mThumbnailDownloadListener : $mThumbnailDownloadListener")
                 mThumbnailDownloadListener?.onThumbnailDownloaded(target, bitmap)
             }
         } catch (ioe: IOException) {

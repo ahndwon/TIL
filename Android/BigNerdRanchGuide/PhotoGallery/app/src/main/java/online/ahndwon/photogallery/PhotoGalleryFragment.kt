@@ -1,5 +1,6 @@
 package online.ahndwon.photogallery
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_photo_gallery.view.*
 
 class PhotoGalleryFragment : VisibleFragment() {
+
     companion object {
         val TAG: String = PhotoGalleryFragment::class.java.name
 
@@ -29,12 +31,30 @@ class PhotoGalleryFragment : VisibleFragment() {
     var mItems = ArrayList<GalleryItem>()
     var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>? = null
 
-    class PhotoHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class PhotoHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         private val galleryImageView = view as ImageView
+        private var galleryItem : GalleryItem? = null
+
+        init {
+            view.setOnClickListener(this)
+        }
 
         fun bindDrawable(drawable: Drawable) {
             galleryImageView.setImageDrawable(drawable)
         }
+
+        fun bindGalleryItem(galleryItem: GalleryItem) {
+            this.galleryItem = galleryItem
+        }
+
+        override fun onClick(v: View?) {
+            galleryItem?.let {
+                val intent = Intent(Intent.ACTION_VIEW, it.getPhotoPageUri())
+                v?.context?.startActivity(intent)
+            }
+        }
+
+
     }
 
     inner class PhotoAdapter(val items: List<GalleryItem>) : RecyclerView.Adapter<PhotoHolder>() {
@@ -53,8 +73,11 @@ class PhotoGalleryFragment : VisibleFragment() {
             val galleryItem = items[position]
             val placeholder = resources.getDrawable(R.drawable.bill_up_close, null)
             holder.bindDrawable(placeholder)
+            holder.bindGalleryItem(galleryItem)
             thumbnailDownloader?.queueThumbnail(holder, galleryItem.url)
         }
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,14 +95,16 @@ class PhotoGalleryFragment : VisibleFragment() {
 
 
         val responseHandler = Handler()
-        thumbnailDownloader = ThumbnailDownloader(responseHandler)
-        thumbnailDownloader?.mThumbnailDownloadListener =
-                object : ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder> {
-                    override fun onThumbnailDownloaded(target: PhotoHolder, thumbnail: Bitmap) {
-                        val drawable = BitmapDrawable(resources, thumbnail)
-                        target.bindDrawable(drawable)
+        thumbnailDownloader = ThumbnailDownloader<PhotoHolder>(responseHandler).apply {
+            this.mThumbnailDownloadListener =
+                    object : ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder> {
+                        override fun onThumbnailDownloaded(target: PhotoHolder, thumbnail: Bitmap) {
+                            val drawable = BitmapDrawable(resources, thumbnail)
+                            target.bindDrawable(drawable)
+                        }
                     }
-                }
+        }
+
         thumbnailDownloader?.start()
         thumbnailDownloader?.looper
         Log.i(TAG, "Background thread started")
@@ -139,8 +164,11 @@ class PhotoGalleryFragment : VisibleFragment() {
     private fun setupAdapter(recyclerView: RecyclerView) {
         if (isAdded) {
             recyclerView.adapter = PhotoAdapter(mItems)
+            recyclerView.adapter?.notifyDataSetChanged()
+            Log.d(PhotoGalleryFragment::class.java.name, "setupAdapter")
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
