@@ -31,7 +31,7 @@ class PhotoGalleryFragment : VisibleFragment() {
     var mItems = ArrayList<GalleryItem>()
     var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>? = null
 
-    class PhotoHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    inner class PhotoHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         private val galleryImageView = view as ImageView
         private var galleryItem : GalleryItem? = null
 
@@ -49,8 +49,11 @@ class PhotoGalleryFragment : VisibleFragment() {
 
         override fun onClick(v: View?) {
             galleryItem?.let {
-                val intent = Intent(Intent.ACTION_VIEW, it.getPhotoPageUri())
-                v?.context?.startActivity(intent)
+//                val intent = Intent(Intent.ACTION_VIEW, it.getPhotoPageUri())
+                activity?.let { activity ->
+                    val intent = PhotoPageActivity.newIntent(activity, it.getPhotoPageUri())
+                    v?.context?.startActivity(intent)
+                }
             }
         }
 
