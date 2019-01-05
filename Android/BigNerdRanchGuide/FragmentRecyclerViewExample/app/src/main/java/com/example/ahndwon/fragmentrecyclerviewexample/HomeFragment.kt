@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
 
+
 class HomeFragment : Fragment() {
 
 
