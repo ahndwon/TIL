@@ -5,24 +5,30 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
-import android.location.LocationManager
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import online.ahndwon.photogallery.GalleryItem
 import java.io.IOException
 
-class LocatrFragment : Fragment() {
-    lateinit var mImageView: ImageView
+class LocatrFragment : SupportMapFragment() {
     lateinit var mClient: GoogleApiClient
+    lateinit var mMap: GoogleMap
+    lateinit var mMapImage: Bitmap
+    lateinit var mMapItem: GalleryItem
+    lateinit var mCurrentLocation: Location
 
     companion object {
         fun newInstance(): LocatrFragment {
@@ -38,28 +44,52 @@ class LocatrFragment : Fragment() {
         setHasOptionsMenu(true)
         activity?.let {
             mClient = GoogleApiClient.Builder(it)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
-                    override fun onConnected(p0: Bundle?) {
-                        activity?.invalidateOptionsMenu()
-                    }
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
+                        override fun onConnected(p0: Bundle?) {
+                            activity?.invalidateOptionsMenu()
+                        }
 
-                    override fun onConnectionSuspended(p0: Int) {
+                        override fun onConnectionSuspended(p0: Int) {
 
-                    }
+                        }
 
-                })
-                .build()
+                    })
+                    .build()
+
+            getMapAsync { googleMap ->
+                mMap = googleMap
+//                updateUI()
+            }
         }
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_locatr, container, false)
-        mImageView = view.findViewById(R.id.image)
-        return view
-    }
+    private fun updateUI() {
+        val itemPoint = LatLng(mMapItem.mLat, mMapItem.mLon)
+        val myPoint = LatLng(mCurrentLocation.latitude, mCurrentLocation.longitude)
 
+        val itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage)
+        val itemMarker = MarkerOptions()
+                .position(itemPoint)
+                .icon(itemBitmap)
+
+        val myMarker = MarkerOptions()
+                .position(myPoint)
+
+        mMap.clear()
+        mMap.addMarker(itemMarker)
+        mMap.addMarker(myMarker)
+
+        val bounds = LatLngBounds.Builder()
+                .include(itemPoint)
+                .include(myPoint)
+                .build()
+
+        val margin = resources.getDimensionPixelSize(R.dimen.map_inset_margin)
+        val update = CameraUpdateFactory.newLatLngBounds(bounds, margin)
+        mMap.animateCamera(update)
+    }
 
     override fun onStart() {
         super.onStart()
@@ -90,25 +120,25 @@ class LocatrFragment : Fragment() {
         }
 
         LocationServices.FusedLocationApi
-            .requestLocationUpdates(
-                mClient, request
-            ) { location ->
-                Log.i(LocatrFragment::class.java.name, "Got a fix: $location")
-                SearchTask().execute(location)
-            }
+                .requestLocationUpdates(
+                        mClient, request
+                ) { location ->
+                    Log.i(LocatrFragment::class.java.name, "Got a fix: $location")
+                    SearchTask().execute(location)
+                }
     }
 
     private fun checkLocationPermission(context: Context): Boolean {
         return if (ActivityCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+                        context,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
         ) {
             true
         } else {
             requestPermissions(
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_CODE_ACCESS_FINE_LOCATION
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_CODE_ACCESS_FINE_LOCATION
             )
 
             true
@@ -131,7 +161,10 @@ class LocatrFragment : Fragment() {
     private inner class SearchTask : AsyncTask<Location, Void, Void>() {
         lateinit var mGalleryItem: GalleryItem
         lateinit var mBitmap: Bitmap
+        lateinit var mLocation: Location
+
         override fun doInBackground(vararg params: Location): Void? {
+            mLocation = params[0]
             val fetchr = FlickrFetchr()
             val items = fetchr.searchPhotos(params[0])
 
@@ -145,7 +178,7 @@ class LocatrFragment : Fragment() {
                 val bytes = fetchr.getUrlBytes(mGalleryItem.url)
                 mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
-            } catch (ioe : IOException) {
+            } catch (ioe: IOException) {
                 Log.i(LocatrFragment::class.java.name, "Unable to download bitmap", ioe)
             }
             return null
@@ -153,7 +186,10 @@ class LocatrFragment : Fragment() {
 
         override fun onPostExecute(result: Void?) {
             super.onPostExecute(result)
-            mImageView.setImageBitmap(mBitmap)
+            mMapImage = mBitmap
+            mMapItem = mGalleryItem
+            mCurrentLocation = mLocation
+            updateUI()
         }
     }
 }

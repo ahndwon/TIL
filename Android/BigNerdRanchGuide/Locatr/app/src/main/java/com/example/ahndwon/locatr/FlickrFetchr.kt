@@ -24,7 +24,7 @@ class FlickrFetchr {
             .appendQueryParameter("api_key", API_KEY)
             .appendQueryParameter("format", "json")
             .appendQueryParameter("nojsoncallback", "1")
-            .appendQueryParameter("extras", "url_s")
+            .appendQueryParameter("extras", "url_s, geo")
             .build()
     }
 
@@ -134,7 +134,9 @@ class FlickrFetchr {
             }
             val url = photoJsonObject.getString("url_s")
             val owner = photoJsonObject.getString("owner")
-            val item = GalleryItem(caption, id, url, owner)
+            val lat = photoJsonObject.getDouble("latitude")
+            val lon = photoJsonObject.getDouble("longitude")
+            val item = GalleryItem(caption, id, url, owner, lat, lon)
 
             items.add(item)
         }
