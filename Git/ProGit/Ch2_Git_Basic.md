@@ -190,7 +190,229 @@ Staging Area에서만 파일을 제거하고 워킹 디렉토리에 있는 파�
 
 여러 개의 파일이나 디렉토리를 한꺼번에 삭제 가능
 `$ git rm log/\*.log`.  -  log/ 디렉토리에 있는 .log파일 모두 삭제
-*앞에 \을 사용해야 한다. 파일명 확장 기능은 셀에만 있는 것이 아니라 Git 자체에도 있기 때`$ git rm \*~`  - ~로 끝나느 파일 모두 삭제
+*앞에 \을 사용해야 한다. 파일명 확장 기능은 셀에만 있는 것이 아니라 Git 자체에도 있기 때`$ git rm \*~`  - ~로 끝나느 파일 모두 삭제
+### 파일 이름 변경하기
+Git은 파일 이름의 변경이나 파일의 이동을 명시적으로 관리하지 않는다.
+Git의 mv 명령어로 파일을 움직이면 기존 파일을 git rm 하고 새로운 위치의 파일을 git add 한다.
+
+파일 이동 명령어
+`$ git mv file_from file_to`
+
+**`git mv README.md README`의 내부적 동작**
+```
+$ mv README.md README
+$ git rm README.md
+$ git add README
+```
+
+
+
+### 커밋 히스토리 조회하기
+`git log`를 통해 히스토리를 조회할 수 있다.
+저장소의 커밋 히스토리를 시간순으로 보여줌 -> 가장 최근의 커밋이 먼저 나온다.
+
+각 커밋의 SHA-1 체크섬, 저자 이름, 저자 이메일, 커밋 날짜, 커밋 메시지 표시함.
+
+**옵션**
+* -p : 각 커밋의 diff 결과를 보여준다. 
+* -2 : 최근 두 개의 결과만 보여준다.
+* —stat : 각 커밋의 통계 정보를 조회
+* —graph : 브랜치와 머지 히스토리를 보여주는 아스키 그래프를 출력함
+* —pretty : 히스토리 내용을 보여줄 때 기본 형식 이외에 여러 가지 중에 하나를 선택 가능한 옵션 
+	* oneline : 각 커밋을 한 라인으로 보여줌
+	* short
+	* full
+	* fuller
+	* format : 사용자가 원하는 포맷으로 결과를 출력하게 해줌
+```
+$ git log --pretty=format:"%h - %an, %ar : %s"
+ca82a6d - Scott Chacon, 6 years ago : changed the version number 085bb3b - Scott Chacon, 6 years ago : removed unnecessary test a11bef0 - Scott Chacon, 6 years ago : first commit 
+```
+
+**포맷 옵션들**
+![](Ch2_Git_Basic/17B74E82-F46D-4888-B5B8-A44A71451A59.png)
+[format option](http://2.bp.blogspot.com/-4n_S2jl1iRE/VojNMn02xPI/AAAAAAAAAQQ/Q7P3-RPnGq8/s1600/git_pretty_formats.png)
+
+
+**Author** - 파일을 실제로 작성하거나 변경한 사람
+**Committer** - 커밋을 한 사람
+
+Example - 내가 어떤 프로젝트에 패치를 보냈고 그 프로젝트의 담당자가 패치를 적용했다면 내가 저자고 그 담당자가 커미터다. 
+
+![](Ch2_Git_Basic/C2013ECC-3932-438B-864B-630D8338617D.png)
+
+
+### 조회 제한조건
+Git log의 조회 범위를 제한할 수 있다.
+—since 나 —until로 시간을 기준으로도 조회할 수 있고
+-<n>으로 최근 몇개만 조회할 수도 있다.
+
+![](Ch2_Git_Basic/B11BD70C-CBE0-43E0-A39C-626BD3B3817A.png)
+
+
+
+### 되돌리기
+실수를 해서 복구하고 싶은 경우 되돌리기를 사용하면 된다.
+하지만 되돌리긴 것을 복구 할 수는 없다.
+
+**완료한 커밋 수정**
+너무 일찍 커밋했거나 어떤 파일을 빼먹었을 때 그리고 커밋 메시지를 작못 적었을 때
+`$ git commit --amend`
+위 명령어는 Staging Area를 사용하여 커밋한다.
+마지막 커밋과 수정한 것이 없다면 커밋 메시지만 수정하면됨
+
+커밋을 했는데 Stage하는 것을 빠뜨린 파일은 다음과 같이 추가
+```
+$ git commit -m 'initial commit'
+$ git add forgotten_file
+$ git commit --amend
+// 두 번째 커밋이 첫 번째 커밋을 덮어씀
+```
+
+
+
+### 파일 상태를 Unstage로 변경
+이미 Staged 상태인 파일을 Unstaged로 바꾸기 위해선
+`$ git reset <file>`을 해주면 된다.
+
+
+### Modified 파일 되돌리기
+수정한 파일 되돌리기
+원래 파일을 덮어쓰기 때문에 수정한 내용 전부 사라짐
+`$ git checkout -- <file>`
+
+
+### 리모트 저장소 
+리모트 저장소 - 인터넷이나 네트워크 어딘가에 있는 저장소
+다른 사람들과 함께 일하는 것은 리모트 저장소를 관리하면서 데이터를 거기에 Push하고 Pull 하는 것.
+리모트 저장소 관리 -> 저장소를 추가, 삭제, 브랜치를 관리, 추적을 의미
+
+
+### 리모트 저장소 확인하기
+`$ git remote`로 현재 프로젝트에 등록된 리모트 저장소 확인 가능
+저장소를 Clone하면 origin이 자동으로 등록됨
+-v 옵션을 추가하면 url도 출력됨
+
+
+### 리모트 저장소 추가하기
+`$ git remote add [단축이름] [url]`
+
+
+### 리모트 저장소를 Pull 하거나 Fetch 하기
+Fetch
+`$ git fetch [remote-name]`
+로컬에는 없지만, 리모트 저장소에 있는 데이터를 모두 가져옴.
+리모트 저장소의 모든 브랜치를 로컬에서 접근할 수 있어서 언제든 Merge를 하거나 내용을 살펴볼 수 있다.
+**자동으로 Merge가 되지 않음**  -> 수동으로 해야함.
+
+`$ git pull` -> 로컬로 데이터를 가져오고 merge도 자동으루 수행
+
+
+### 리모트 저장소에 Push
+Clone한 리모트 저장소에 쓰기 권한이 있고, Clone하고 난 이후 아무도 Upstream 저장소에 Push 하지 않았을 때만 사용 가능.
+`$ git push [리모트 저장소 이름] [브랜치 이름]`
+
+
+### 리모트 저장소 살펴보기
+`$ git remote show [리모트 저장소 이름]`
+리모트 저장소의 URL과 추적하는 브랜치를 출력함. 
+`git pull`을 실행할 때 master 브랜치와 Merge 할 브랜치가 무엇인지 보여줌.
+
+
+### 리모트 저장소 이름 수정, 저장소 삭제
+`$ git remote rename [기존 이름] [새 이름]`
+리모트 저장소의 브랜치 이름도 바뀐다.
+
+리모트 저장소 삭제
+```
+$ git remote rm paul
+$ git remote
+```
+
+
+## 태그
+### 태그 조회
+`$ git tag` - 알파벳 순서로 태그를 보여줌
+`$ git tag -l [패턴]` - 검색 패턴을 사용하여 태그 검색 가능
+
+```
+$ git tag -l 'v1.8.5*'
+v1.8.5
+v1.8.5-rc0
+v1.8.5-rc1 
+v1.8.5-rc2
+v1.8.5-rc3
+v1.8.5.1
+```
+
+
+### 태그 붙이기
+**태그 두 종류**
+* Lightweight 
+	* 단순히 특정 커밋에 대한 포인터. 브랜치처럼 가리키는 지점을 최신 컷으로 이동시키지 않음 
+* Annotated
+	* Git 데이터베이스에 태그를 만든 사람의 이름
+	* 이메일과 태그를 만든 날짜, 그리고 태그 메시지도 저장한다.
+	* GPU (GNU Privacy Guard)로 서명할 수도 있다.
+	* 모든 정보를 저장해둬야 할 때에만 Annotated 태그를 추천한다. 
+	* 다른 정보를 저장하지 않는 단순한 태그는 Lightweight 가 낫다.
+
+
+### Annotated 태그
+`$ git tag -a [tagname] -m [commit message]`
+
+Git show
+`$ git show [tagname]`
+
+
+### Lightweight Tags
+Lightweight - 기본적으로 파일에 커밋 체크섬을 저장
+
+
+### 나중에 태그하기
+```
+$ git log --pretty=oneline
+9fceb02d0ae598e95dc970b74767f19372d61af8 updated rakefile 
+
+$ git tag -a v1.2 9fceb02
+```
+특정 커밋에 태그하기 위해 명령의 끝네 커밋 체크섬을 명시해야함 (체크섬은 전부 말고 앞부분만 사용해도 됨)
+
+
+### 태그 공유하기
+Git push 명령은 자동으로 리모트 서버에 태그를 전송하지 않음
+태그를 만들었으면 서버에 별도로 Push를 해야함.
+`$ git push [remote] [tagname]`
+
+
+### 태그 Checkout
+태그는 브랜치와 달리 가리키는 커밋을 바꿀 수 없는 이름 -> Checkout해서 사용  불가
+태그가 가리키는 특정 커밋 기반의 브랜치를 만들어 작업하려면 다음처럼 해야 한다.
+`$ git checkout -b [branch] [tagname]`
+이렇게 브랜치를 만든 후에 커밋하면 브랜치는 업데이트 되지만 태그가 가리키는 커밋이 변하지 않으므로 두 내용이 가리키는 커밋이 다르다.
+
+
+### Git Alias
+`git config` 에 각 명령의  Alias를 추가해주면 명령을 단축해서 실행할 수 있다.
+
+**예**
+```
+$ git config --global alias.co checkout 
+$ git config --global alias.br branch 
+$ git config --global alias.ci commit 
+$ git config --global alias.st status 
+$ git config --global alias.unstage 'reset HEAD --' 
+$ git config --global alias.last 'log -1 HEAD' 
+
+// 외부 명령
+$ git config --global alias.visual '!gitk' 
+
+
+$ git unstage fileA
+$ git reset HEAD fileA
+```
+
+
 
 
 
