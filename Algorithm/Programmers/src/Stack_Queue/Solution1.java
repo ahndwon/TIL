@@ -6,16 +6,30 @@ public class Solution1 {
     public int solution(String arrangement) {
         char[] arrangementArray = arrangement.toCharArray();
 
-        int answer = 0;
 
         ArrayList<Bar> bars = extractBars(arrangementArray);
+        ArrayList<Laser> lasers = extractLasers(arrangementArray);
 
         for (Bar bar : bars) {
             System.out.println(bar);
         }
 
 
-        return answer;
+        return getNumberOfPieces(bars, lasers);
+    }
+
+    private int getNumberOfPieces(ArrayList<Bar> bars, ArrayList<Laser> lasers) {
+        int total = 0;
+        for (Bar bar : bars) {
+            int piece = 1;
+            for (Laser laser : lasers) {
+                if (bar.start < laser.start && bar.end > laser.end) {
+                    piece += 1;
+                }
+            }
+            total += piece;
+        }
+        return total;
     }
 
 
@@ -55,6 +69,19 @@ public class Solution1 {
         return new Bar(start, end);
     }
 
+    private ArrayList<Laser> extractLasers(char[] arrangement) {
+        ArrayList<Laser> lasers = new ArrayList<>();
+
+        for (int i = 0; i < arrangement.length; i++) {
+            if (arrangement[i] == '(') {
+                if (arrangement[i + 1] == ')') {
+                    lasers.add(new Laser(i, i + 1));
+                }
+            }
+        }
+        return lasers;
+    }
+
     class Bar {
         int start;
         int end;
@@ -74,7 +101,10 @@ public class Solution1 {
         int start;
         int end;
 
-
+        public Laser(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
     }
 }
 
