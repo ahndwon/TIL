@@ -1,0 +1,3 @@
+/Users/ahndwon/CLionProjects/ansi/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/ahndwon/CLionProjects/ansi/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/ahndwon/CLionProjects/ansi/cmake-build-debug/CMakeFiles/ansi.dir

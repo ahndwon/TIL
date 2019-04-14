@@ -3,14 +3,14 @@ package Algorithm.BFS;
 import java.util.LinkedList;
 
 public class PracticeGraph {
-    private int V; // 노드의 개수
+    private int V;
     private LinkedList<Integer>[] adj;
 
     PracticeGraph(int v) {
         V = v;
         adj = new LinkedList[v];
-        for (int i = 0; i < adj.length; i++)
-            adj[i] = new LinkedList();
+        for (int i = 0; i < v; i++)
+            adj[i] = new LinkedList<>();
     }
 
     void addEdge(int v, int w) {
@@ -19,8 +19,7 @@ public class PracticeGraph {
 
     void BFS(int s) {
         boolean[] visited = new boolean[V];
-
-        LinkedList<Integer> queue = new LinkedList();
+        LinkedList<Integer> queue = new LinkedList<>();
 
         visited[s] = true;
         queue.add(s);
@@ -39,9 +38,9 @@ public class PracticeGraph {
     }
 }
 
-class PracticeMain {
+class PraticeMain {
     public static void main(String[] args) {
-        Graph g = new Graph(4);
+        PracticeGraph g = new PracticeGraph(4);
 
         g.addEdge(0, 1);
         g.addEdge(0, 2);
@@ -53,3 +52,5 @@ class PracticeMain {
         g.BFS(2); /* 주어진 노드를 시작 노드로 BFS 탐색 */
     }
 }
+
+
