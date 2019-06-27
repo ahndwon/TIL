@@ -3,6 +3,7 @@ package online.ahndwon.beatbox
 class Sound(val assetPath: String) {
     val name : String
     var soundId : Int? = null
+    var streamId : Int? = null
 
     init {
         val components = assetPath.split("/")

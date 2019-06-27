@@ -51,7 +51,21 @@ class BeatBox(context: Context) {
     fun play(sound: Sound) {
         val soundId = sound.soundId
         soundId?.let {
-            soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+            if (sound.streamId == null) {
+                sound.streamId = soundPool.play(soundId, 0.5f, 0.5f, 1, -1, 1f)
+            } else {
+                sound.streamId?.let {
+                    soundPool.pause(it)
+                }
+                sound.streamId = null
+            }
+
+        }
+    }
+
+    fun setVolume(sound: Sound, volume: Float) {
+        sound.streamId?.let { streamId ->
+            soundPool.setVolume(streamId, volume, volume)
         }
     }
 

@@ -2,6 +2,8 @@
 thumbs.db
 .idea
 
+*.DS_Store
+
 # built application files
 *.apk
 *.ap_

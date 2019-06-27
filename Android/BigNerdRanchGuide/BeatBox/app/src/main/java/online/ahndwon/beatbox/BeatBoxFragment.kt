@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.SeekBar
 import kotlinx.android.synthetic.main.fragment_beat_box.view.*
 import kotlinx.android.synthetic.main.list_item_sound.view.*
 
@@ -48,6 +49,21 @@ class BeatBoxFragment : Fragment() {
             button.setOnClickListener {
                 beatBox.play(sound)
             }
+
+            holder.itemView.volumeBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    beatBox.setVolume(sound, progress / 100f)
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+                }
+
+            })
         }
     }
 
