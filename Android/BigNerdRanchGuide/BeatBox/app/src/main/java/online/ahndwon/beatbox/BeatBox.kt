@@ -38,8 +38,6 @@ class BeatBox(context: Context) {
         } catch (e: IOException) {
             Log.e(TAG, "Could not list assets", e)
         }
-
-
     }
 
     @Throws(IOException::class)
